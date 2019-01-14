@@ -27,7 +27,9 @@ class App extends Component {
     super(props);
     this.state = {
       querie: '',
-      search: ''
+      search: '',
+      result: '',
+      result2: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
@@ -41,19 +43,20 @@ class App extends Component {
   handleSearch(event) {
     // this.setState({ search: this.state.value });
     let preQuerie = this.state.querie.replace(/ /g, "+");
-    const searchQuerie = 'http://flibusta.is/booksearch?ask=' + preQuerie + '&chs=on&cha=on&chb=on';
-    const searchFullResult = fetch(searchQuerie, {
-      mode: 'no-cors'
-    });
-    console.log(searchFullResult);
-    // console.log(searchQuerie)
+    const searchQuerie = 'https://flibustasearch.herokuapp.com/http://flibusta.is/booksearch?ask=' + preQuerie + '&chs=on&cha=on&chb=on';
+    const searchFullResult = axios.get(searchQuerie).then(response => this.setState({ result: response.data }))
+    // const searchFullResult = axios.get(searchQuerie);
+    // console.log(this.state.result);
+    this.setState({ result: searchFullResult });
+    const result0 = String(this.state.result)
+    const result1 = result0.substring(this.state.result.indexOf('<ul><li>') + 8);
+    const result2 = result1.substring(0, result1.indexOf('</ul><br>'));
+    this.setState({ result2: result2 });
+    // console.log(this.state.result2);
+    const array1 = result2.split('\n');
+    const array2 = array1.filter(String)
+    console.log(array2)
   }
-
-  prepareQuerie() {
-    let preQuerie = this.state.querie.replace(/ /g, "+");
-    const searchQuerie = 'http://flibusta.is/booksearch?ask=' + preQuerie + '&chs=on&cha=on&chb=on';
-  }
-  // var querie = prepareQuerie();
 
   render() {
 
@@ -64,6 +67,9 @@ class App extends Component {
         {/* <SearchInput
           placeholder='Enter book name' /> */}
         <button onClick={this.handleSearch}>Search</button>
+        <div>
+
+        </div>
       </div>
     );
   }
